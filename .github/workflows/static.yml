@@ -106,6 +106,114 @@
         .article-content {
             background: white;
             padding: 20px;
+            border-radius: 10px;<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موقع المقالات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            direction: rtl;
+            background-color: #f9f9f9;
+        }
+
+        /* الهيدر */
+        header {
+            background-color: #007b5e;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        /* الشريط العلوي */
+        nav {
+            display: flex;
+            justify-content: center;
+            background: #005b44;
+            padding: 10px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* الحاوية */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        /* البحث */
+        .search-box {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .search-box input {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: right;
+            font-size: 16px;
+        }
+
+        /* شبكة المقالات */
+        .articles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .article-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .article-card:hover {
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .article-card h3 {
+            color: #007b5e;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .article-card p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* المحتوى التفصيلي */
+        .article-content {
+            background: white;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
@@ -140,25 +248,13 @@
             <input type="text" id="search" placeholder="🔍 ابحث عن مقال...">
         </div>
 
-        <div class="articles" id="articleList">
-            <div class="article-card" onclick="showArticle(0)">
-                <h3>📌 كيفية تعلم البرمجة من الصفر</h3>
-                <p>تعلم البرمجة يفتح لك أبواب الإبداع والعمل عن بعد. اكتشف الأساسيات الآن!</p>
-            </div>
-            <div class="article-card" onclick="showArticle(1)">
-                <h3>📌 أسرار الإنتاجية وزيادة التركيز</h3>
-                <p>كيف تنجز أكثر في وقت أقل؟ تعرف على أسرار التركيز والإنتاجية.</p>
-            </div>
-            <div class="article-card" onclick="showArticle(2)">
-                <h3>📌 لماذا يجب أن تقرأ يومياً؟</h3>
-                <p>القراءة توسع مداركك وتحسن تفكيرك. إليك فوائد القراءة اليومية!</p>
-            </div>
-        </div>
+        <div class="articles" id="articleList"></div>
 
         <div class="article-content" id="articleContent"></div>
     </div>
 
     <script>
+        // بيانات المقالات
         const articles = [
             {
                 title: "كيفية تعلم البرمجة من الصفر",
@@ -174,16 +270,34 @@
             }
         ];
 
+        const articleList = document.getElementById("articleList");
+        const searchInput = document.getElementById("search");
+        const articleContent = document.getElementById("articleContent");
+
+        // دالة لإنشاء قائمة المقالات في الصفحة
+        function displayArticles() {
+            articleList.innerHTML = "";
+            articles.forEach((article, index) => {
+                let div = document.createElement("div");
+                div.className = "article-card";
+                div.innerHTML = `<h3>📌 ${article.title}</h3><p>${article.content.substring(0, 50)}...</p>`;
+                div.onclick = () => showArticle(index);
+                articleList.appendChild(div);
+            });
+        }
+
+        // دالة لعرض المحتوى التفصيلي للمقال
         function showArticle(index) {
-            const articleContent = document.getElementById("articleContent");
             articleContent.style.display = "block";
             articleContent.innerHTML = `<h2>${articles[index].title}</h2><p>${articles[index].content}</p>`;
+
+            // تمرير الصفحة بسلاسة للمقال
             window.scrollTo({ top: articleContent.offsetTop - 50, behavior: "smooth" });
         }
 
-        document.getElementById("search").addEventListener("input", function () {
-            const query = this.value.toLowerCase();
-            const articleList = document.getElementById("articleList");
+        // دالة البحث في المقالات
+        searchInput.addEventListener("input", function () {
+            const query = searchInput.value.toLowerCase().trim();
             articleList.innerHTML = "";
 
             articles.forEach((article, index) => {
@@ -195,13 +309,17 @@
                     articleList.appendChild(div);
                 }
             });
+
+            // إذا لم يتم العثور على نتائج
+            if (articleList.innerHTML === "") {
+                articleList.innerHTML = "<p style='text-align:center; color:gray;'>❌ لا توجد نتائج</p>";
+            }
         });
-       
-      
+
+        // استدعاء عرض المقالات عند تحميل الصفحة
+        displayArticles();
     </script>
-    
 
 </body>
 </html>
-
 
